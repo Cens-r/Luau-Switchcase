@@ -1,6 +1,16 @@
 # LuauSwitchCase 
 A basic switch-case module for Roblox Luau!
 
+# Setup
+> Setup will probably change in the future to a single command
+
+You can setup the SwitchCase module by requiring the module at the top of your script and unpacking the returned table.  
+*`PathToSwitchCase` should be the location where you've installed the SwitchCase module!*  
+```lua
+local PathToSwitchCase = game:GetService("ReplicatedStorage"):WaitForChild("SwitchCase")
+local switch, case, default = table.unpack(require(PathToSwitchCase))
+```
+
 # Examples
 ### Single-Argument Cases
 ```lua

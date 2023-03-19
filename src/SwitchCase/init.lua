@@ -3,7 +3,7 @@ local switch = function (expression)
 		local defaultFunction
 		local open, closed = false, false
 
-		for _, case in cases do
+		for _, case in pairs(cases) do
 			local operation = case["OPERATION"]
 			if open then
 				case.FUNCTION()
@@ -23,7 +23,7 @@ local switch = function (expression)
 			end
 
 			if caseChecks and caseType == "case" then
-				for _, check in caseChecks do
+				for _, check in pairs(caseChecks) do
 					if check == expression then
 						if operation == "close" then
 							closed = true
@@ -44,6 +44,23 @@ local switch = function (expression)
 	end
 end
 
+local function caseAdder(case, firstArg, ...)
+	local args = {...}
+
+	-- Optimization: for loop unnecessary if it's only one argument
+	local checkLength = #(case.checks)
+	case.checks[checkLength + 1] = firstArg
+	
+	if args then
+		checkLength += 1
+		for _, value in pairs(args) do
+			checkLength += 1
+			case.checks[checkLength] = value
+		end
+	end
+	return case
+end
+
 local function closeOperation(self, caseFunction)
 	return {TYPE = self["type"], CHECKS = self["checks"], FUNCTION = caseFunction, OPERATION = "close"}
 end
@@ -52,27 +69,14 @@ local function openOperation(self, caseFunction)
 	return {TYPE = self["type"], CHECKS = self["checks"], FUNCTION = caseFunction, OPERATION = "open"}
 end
 
-local case
-case = function (...)
-	local args = {...}
-	local pcase = args[1] -- Potential case object
-
-	if type(pcase) == "table" and pcase["type"] == "case" then
-		local checkLength = #pcase.checks
-		for index = 2, #args do
-			checkLength += 1
-			pcase[checkLength] = args[index]
-		end
-		return pcase
-	end
-
+local case = function (...)
 	return {
 		-- Case Properties
 		type = "case",
-		checks = args,
+		checks = {...},
 
 		-- Case Functions
-		case = case,
+		case = caseAdder,
 		close = closeOperation,
 		open = openOperation
 	}

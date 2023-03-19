@@ -1,99 +1,83 @@
-local switch = function(expression)
+local switch = function (expression)
 	return function (cases)
-		local casesMatched = 0
-		local open, closed = false, false
-		
 		local defaultFunction
-		
+		local open, closed = false, false
+
 		for _, case in cases do
-			if closed then
-				break
+			if open then
+				case.FUNCTION()
+				continue
 			end
-			
-			if case.CHECKS and case.OPERATION then
-				if open then
-					if case.OPERATION == "close" then
-						closed = true
-						open = false
-					end
-					
-					case.FUNCTION()
-					casesMatched += 1
-					continue
-				end
-				
-				for _, check in case.CHECKS do
-					if check == expression then	
-						if case.OPERATION == "close" then
+
+			local caseType = case["TYPE"]
+			local caseChecks = case["CHECKS"]
+			local operation = case["OPERATION"]
+
+			if caseType == "default" then
+				defaultFunction = case.FUNCTION
+				continue
+			end
+
+			if caseChecks and caseType == "case" then
+				for _, check in caseChecks do
+					if check == expression then
+						if operation == "close" then
 							closed = true
-						end
-						
-						if case.OPERATION == "open" then
+						elseif operation == "open" then
 							open = true
 						end
-						
+
 						case.FUNCTION()
-						casesMatched += 1
 						break
 					end
 				end
-			else
-				defaultFunction = case.FUNCTION
 			end
 		end
-		
+
 		if not closed and defaultFunction then
 			defaultFunction()
-			casesMatched += 1
 		end
-		return casesMatched
 	end
 end
 
+local function closeOperation(self, caseFunction)
+	return {TYPE = self["type"], CHECKS = self["checks"], FUNCTION = caseFunction, OPERATION = "open"}
+end
 
+local function openOperation(self, caseFunction)
+	return {TYPE = self["type"], CHECKS = self["checks"], FUNCTION = caseFunction, OPERATION = "open"}
+end
 
 local case
 case = function (...)
 	local args = {...}
-	if type(args[1]) == "table" and args[1].type == "case" then
+	local pcase = args[1] -- Potential case object
+
+	if type(pcase) == "table" and pcase["type"] == "case" then
+		local checkLength = #pcase.checks
 		for index = 2, #args do
-			table.insert(args[1].checks, args[index])
+			checkLength += 1
+			pcase[checkLength] = args[index]
 		end
-		return args[1]
+		return pcase
 	end
 
-	local newCase = {
+	return {
+		-- Case Properties
 		type = "case",
-		checks = {...},
-		case = case
+		checks = args,
+
+		-- Case Functions
+		case = case,
+		close = closeOperation,
+		open = openOperation
 	}
-
-	function newCase:close(caseFunction)
-		return {CHECKS = self.checks, FUNCTION = caseFunction, OPERATION = "close"}
-	end
-
-	function newCase:open(caseFunction)
-		return {CHECKS = self.checks, FUNCTION = caseFunction, OPERATION = "open"}
-	end
-
-	return newCase
 end
 
-
-
-local default = function ()
-	local defaultCase = {
-		type = "default"
-	}
-	function defaultCase:close(defaultFunction)
-		return {FUNCTION = defaultFunction}
-	end
-	
-	function defaultCase:open(defaultFunction)
-		return {FUNCTION = defaultFunction}
-	end
-	
-	return defaultCase
-end
+local default = {
+	type = "default",
+	close = closeOperation,
+	open = openOperation
+}
 
 return {switch, case, default}

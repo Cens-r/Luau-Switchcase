@@ -7,7 +7,7 @@ A basic switch-case module for Roblox Luau!
 You can setup the SwitchCase module by requiring the module at the top of your script and unpacking the returned table.  
 *`PathToSwitchCase` should be the location where you've installed the SwitchCase module!*  
 ```lua
-local PathToSwitchCase = game:GetService("ReplicatedStorage"):WaitForChild("switchcase")
+local PathToSwitchCase = game:GetService("ReplicatedStorage"):WaitForChild("SwitchCase")
 local switch, case, default = table.unpack(require(PathToSwitchCase))
 ```
 
@@ -27,7 +27,7 @@ switch (x) {
    print("X is 2")
   end);
   
-  default():
+  default:
    close(function ()
     print("Invalid X")
    end)
@@ -51,7 +51,7 @@ switch (x) {
    print("X is either 3 or 4")
   end);
   
-  default():
+  default:
    close(function ()
     print("Invalid X")
    end)
@@ -77,7 +77,7 @@ switch (x) {
    print("X is either 3, 4, 5, or 6")
   end)
   
-  default():
+  default:
    close(function ()
     print("Invalid X")
    end)

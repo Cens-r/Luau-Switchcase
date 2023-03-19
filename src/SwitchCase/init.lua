@@ -4,14 +4,18 @@ local switch = function (expression)
 		local open, closed = false, false
 
 		for _, case in cases do
+			local operation = case["OPERATION"]
 			if open then
 				case.FUNCTION()
+				if operation == "close" then
+					closed = true
+					break
+				end
 				continue
 			end
 
 			local caseType = case["TYPE"]
 			local caseChecks = case["CHECKS"]
-			local operation = case["OPERATION"]
 
 			if caseType == "default" then
 				defaultFunction = case.FUNCTION
@@ -41,7 +45,7 @@ local switch = function (expression)
 end
 
 local function closeOperation(self, caseFunction)
-	return {TYPE = self["type"], CHECKS = self["checks"], FUNCTION = caseFunction, OPERATION = "open"}
+	return {TYPE = self["type"], CHECKS = self["checks"], FUNCTION = caseFunction, OPERATION = "close"}
 end
 
 local function openOperation(self, caseFunction)

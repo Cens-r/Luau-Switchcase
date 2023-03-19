@@ -3,7 +3,7 @@ local switch = function (expression)
 		local defaultFunction
 		local open, closed = false, false
 
-		for _, case in pairs(cases) do
+		for _, case in cases do
 			local operation = case["OPERATION"]
 			if open then
 				case.FUNCTION()
@@ -23,7 +23,7 @@ local switch = function (expression)
 			end
 
 			if caseChecks and caseType == "case" then
-				for _, check in pairs(caseChecks) do
+				for _, check in caseChecks do
 					if check == expression then
 						if operation == "close" then
 							closed = true
@@ -53,7 +53,7 @@ local function caseAdder(case, firstArg, ...)
 	
 	if args then
 		checkLength += 1
-		for _, value in pairs(args) do
+		for _, value in args do
 			checkLength += 1
 			case.checks[checkLength] = value
 		end

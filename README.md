@@ -55,7 +55,7 @@ switch (x) {
   default:
    close(function ()
     print("Invalid X")
-   end)
+   end);
 }
 
 -- Prints: X is 2
@@ -69,7 +69,7 @@ switch (x) {
  case(1, 2):
   close(function ()
    print("X is either 1 or 2")
-  end)
+  end);
   
  case(3, 4):
   close(function ()
@@ -79,7 +79,7 @@ switch (x) {
   default:
    close(function ()
     print("Invalid X")
-   end)
+   end);
 }
 
 -- Prints: X is either 1 or 2
@@ -100,12 +100,12 @@ switch (x) {
  case(5, 6):
   close(function ()
    print("X is either 3, 4, 5, or 6")
-  end)
+  end);
   
   default:
    close(function ()
     print("Invalid X")
-   end)
+   end);
 }
 
 -- Prints: X is either 1 or 2

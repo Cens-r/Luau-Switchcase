@@ -11,6 +11,9 @@ You can setup the SwitchCase module by requiring the module at the top of your s
 ```lua
 local PathToSwitchCase = game:GetService("ReplicatedStorage"):WaitForChild("SwitchCase")
 local switch, case, default = table.unpack(require(PathToSwitchCase))
+
+-- And as of v1.1.0
+local switch, case, default = require(PathToSwitchCase)()
 ```
 
 # Features
@@ -25,6 +28,10 @@ Thats what the `close` function is used for! When the case is matched it lets th
 -- Syntax Example
 case():
 close(function)
+
+-- As of v1.1.0
+case():
+close(function, args...)
 ```
 
 ### Non-Break Functions
@@ -34,6 +41,10 @@ That's when you'd use the `open` function, it lets the switch statement know it 
 -- Syntax Example
 case():
 open(function)
+
+-- As of v1.1.0
+case():
+open(function, args...)
 ```
 
 # Examples
@@ -62,6 +73,7 @@ switch (x) {
 ```
 
 ### Multi-Argument Cases
+Note: This is much faster than case-to-case format
 ```lua
 local x = 2
 

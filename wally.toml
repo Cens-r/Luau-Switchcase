@@ -1,11 +1,11 @@
 [package]
-name = "cens-r/luauswitchcase"
+name = "cens-r/SwitchCase"
 description = "Luau Switch-Case Implementation"
 license = "MIT"
 authors = ["Censor"]
 version = "1.0.1"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
-exclude = [".gitattributes", ".gitignore", "SwitchCase.rbxm"]
+exclude = [".gitattributes", ".gitignore", "SwitchCase.rbxm", "selene.toml"]
 
 [dependencies]

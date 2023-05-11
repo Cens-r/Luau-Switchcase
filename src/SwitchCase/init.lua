@@ -1,12 +1,12 @@
 local switch = function (expression)
 	return function (cases)
-		local defaultFunction
+		local defaultFunction, defaultArgs
 		local open, closed = false, false
 
 		for _, case in cases do
 			local operation = case["OPERATION"]
 			if open then
-				case.FUNCTION()
+				case.FUNCTION(table.unpack(case.ARGS))
 				if operation == "close" then
 					closed = true
 					break
@@ -19,6 +19,7 @@ local switch = function (expression)
 
 			if caseType == "default" then
 				defaultFunction = case.FUNCTION
+				defaultArgs = case.ARGS
 				continue
 			end
 
@@ -31,7 +32,7 @@ local switch = function (expression)
 							open = true
 						end
 
-						case.FUNCTION()
+						case.FUNCTION(table.unpack(case.ARGS))
 						break
 					end
 				end
@@ -39,7 +40,7 @@ local switch = function (expression)
 		end
 
 		if not closed and defaultFunction then
-			defaultFunction()
+			defaultFunction(table.unpack(defaultArgs))
 		end
 	end
 end
@@ -61,12 +62,12 @@ local function caseAdder(case, firstArg, ...)
 	return case
 end
 
-local function closeOperation(self, caseFunction)
-	return {TYPE = self["type"], CHECKS = self["checks"], FUNCTION = caseFunction, OPERATION = "close"}
+local function closeOperation(self, caseFunction, ...)
+	return {TYPE = self["type"], CHECKS = self["checks"], FUNCTION = caseFunction, ARGS = {...}, OPERATION = "close"}
 end
 
-local function openOperation(self, caseFunction)
-	return {TYPE = self["type"], CHECKS = self["checks"], FUNCTION = caseFunction, OPERATION = "open"}
+local function openOperation(self, caseFunction, ...)
+	return {TYPE = self["type"], CHECKS = self["checks"], FUNCTION = caseFunction, ARGS = {...}, OPERATION = "open"}
 end
 
 local case = function (...)
@@ -88,4 +89,10 @@ local default = {
 	open = openOperation
 }
 
-return {switch, case, default}
+local returnTable = {switch, case, default}
+
+return setmetatable(returnTable, {
+	__call = function ()
+		return table.unpack(returnTable)
+	end
+})

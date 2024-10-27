@@ -1,3 +1,6 @@
-SwitchCase.rbxm
-aftman.toml
-SwitchCase.zip
+# Project place file
+/SwitchCase.rbxlx
+
+# Roblox Studio lock files
+/*.rbxlx.lock
+/*.rbxl.lock

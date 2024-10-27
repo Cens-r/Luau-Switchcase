@@ -1,6 +1,6 @@
 {
-    "name": "SwitchCase",
-    "tree": {
-      "$path": "src/SwitchCase"
-    }
+  "name": "SwitchCase",
+  "tree": {
+		"$path": "src"
   }
+}

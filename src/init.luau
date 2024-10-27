@@ -4,9 +4,12 @@ local function UniqueType(name: string)
 	return setmetatable({name = name}, { __tostring = function (self) return self.name end })
 end
 
-local TYPES = {
+local TYPES = table.freeze({
 	SWITCH = UniqueType("Switch"),
 	CASE = UniqueType("Case")
+})
+local FLAGS = {
+	ImplicitExitBehavior = true, 	-- Determines whether a case exits by default when it ends
 }
 
 type CaseCallback<T> = (out: T, arg: any) -> ()
@@ -18,9 +21,16 @@ export type Case<T> = {
 }
 
 local DEFAULT_INDENTIFIER = {}
-local EXIT do
-	EXIT = function () return EXIT end
+local function CASE_BEHAVIOR_MODIFIER()
+	local method: CaseCallback<any>
+	method = function ()
+		return method
+	end :: any
+	return method
 end
+
+local EXIT = CASE_BEHAVIOR_MODIFIER()
+local PROCEED = CASE_BEHAVIOR_MODIFIER()
 
 type Resolve<T> = (switch: Switch<T>, value: any) -> T
 local function ResolveSwitch<T>(switch: Switch<T>, value: any): T
@@ -29,15 +39,17 @@ local function ResolveSwitch<T>(switch: Switch<T>, value: any): T
 	local index: number = switch.__map[value] or switch.__map[DEFAULT_INDENTIFIER]
 	if not index then return out end
 	
-	local complete = false
+	local complete: boolean
 	local size: number = switch.__size
 	repeat
 		local content = switch.__contents[index]
 		if not content then break end
 
+		complete = FLAGS.ImplicitExitBehavior
+
 		for _, callback in content do
-			if callback == EXIT then
-				complete = true
+			if (callback == EXIT) or (callback == PROCEED) then
+				complete = (callback == EXIT)
 				break
 			end
 			callback(out, value)
@@ -56,9 +68,13 @@ export type Switch<T> = {
 	resolve: Resolve<T>
 }
 
-return {
+return table.freeze({
 	types = TYPES,
+	flags = FLAGS,
+
 	exit = EXIT,
+	proceed = PROCEED,
+
 	switch = function <T>(cases: {Case<T>}): Switch<T>
 		if (typeof(cases) ~= "table") or (#cases <= 0) then
 			error("No valid case list! An array of cases must be provided.")
@@ -111,4 +127,4 @@ return {
 			content = content 
 		}
 	end
-}
+})
